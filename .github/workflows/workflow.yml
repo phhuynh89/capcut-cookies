@@ -1,9 +1,6 @@
 name: Auto refresh Capcut cookies
 
 on:
-  schedule:
-    - cron: '*/10 * * * *'
-
   workflow_dispatch:
   push:
     branches:

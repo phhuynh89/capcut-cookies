@@ -4,14 +4,20 @@
 
 set -e  # Exit on error
 
+# Change to the script's directory to ensure we're in the right location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
 BRANCH="trigger-action"
 COMMIT_MESSAGE="chore: trigger workflow - $(date +'%Y-%m-%d %H:%M:%S')"
 
 echo "🚀 Triggering workflow by pushing to $BRANCH branch..."
+echo "📁 Working directory: $(pwd)"
 
 # Check if git is initialized
 if [ ! -d .git ]; then
-    echo "❌ Error: Not a git repository"
+    echo "❌ Error: Not a git repository in $(pwd)"
+    echo "💡 Make sure you're running this script from a git repository directory"
     exit 1
 fi
 
