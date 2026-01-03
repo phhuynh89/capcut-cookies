@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 import dotenv from 'dotenv';
-import { setTimeout } from 'timers/promises';
+import { setTimeout } from "node:timers/promises";
 
 // Load environment variables
 dotenv.config();
