@@ -77,12 +77,53 @@ async function loginAndGetCookies(email, password) {
     const allCookies = await page.cookies();
     
     if (allCookies.length === 0) {
-      throw new Error('No sid_guard cookie found after login');
+      throw new Error('No cookies found after login');
     }
     
-    console.log(`Found ${allCookies.length} sid_guard cookie(s)`);
+    console.log(`Found ${allCookies.length} cookie(s)`);
     
-    // Find the expiration date from filtered cookies (use the longest expiration date)
+    // Transform cookies to the required format
+    const formattedCookies = allCookies.map(cookie => {
+      // Determine hostOnly: true if domain doesn't start with '.'
+      const hostOnly = !cookie.domain.startsWith('.');
+      
+      // Determine session: true if expires is -1 or undefined
+      const isSession = !cookie.expires || cookie.expires === -1;
+      
+      // Convert sameSite to the expected format
+      let sameSite = 'unspecified';
+      if (cookie.sameSite) {
+        const sameSiteLower = cookie.sameSite.toLowerCase();
+        if (sameSiteLower === 'none') {
+          sameSite = 'no_restriction';
+        } else if (sameSiteLower === 'lax' || sameSiteLower === 'strict') {
+          sameSite = sameSiteLower;
+        }
+      }
+      
+      // Format the cookie object
+      const formattedCookie = {
+        domain: cookie.domain,
+        hostOnly: hostOnly,
+        httpOnly: cookie.httpOnly || false,
+        name: cookie.name,
+        path: cookie.path || '/',
+        sameSite: sameSite,
+        secure: cookie.secure || false,
+        session: isSession,
+        storeId: '0',
+        value: cookie.value
+      };
+      
+      // Add expirationDate only if it's not a session cookie
+      if (!isSession && cookie.expires) {
+        formattedCookie.expirationDate = cookie.expires;
+      }
+      
+      return formattedCookie;
+    });
+    
+    // Find the expiration date from cookies (use the longest expiration date)
     let expireDate = null;
     if (allCookies.length > 0) {
       const maxExpiration = Math.max(...allCookies.map(c => c.expires || 0).filter(exp => exp > 0));
@@ -91,9 +132,11 @@ async function loginAndGetCookies(email, password) {
       }
     }
 
+    console.log('Formatted cookies:', formattedCookies);
+
     return {
       url: 'https://www.capcut.com',
-      cookies: allCookies,
+      cookies: formattedCookies,
       expire_date: expireDate
     };
   } catch (error) {
@@ -132,7 +175,7 @@ async function uploadCookies(accountId, cookieData) {
 
 // Process a single account
 async function processAccount(account) {
-  console.log(`\nProcessing account ${account.id} (${account.email})...`);
+  console.log(`\nProcessing account:`, account);
   
   try {
     // Login and get cookies
