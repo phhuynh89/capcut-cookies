@@ -76,19 +76,16 @@ async function loginAndGetCookies(email, password) {
     console.log('Extracting cookies...');
     const allCookies = await page.cookies();
     
-    // Filter cookies to only include "sid_guard"
-    const cookies = allCookies.filter(cookie => cookie.name === 'sid_guard');
-    
-    if (cookies.length === 0) {
+    if (allCookies.length === 0) {
       throw new Error('No sid_guard cookie found after login');
     }
     
-    console.log(`Found ${cookies.length} sid_guard cookie(s)`);
+    console.log(`Found ${allCookies.length} sid_guard cookie(s)`);
     
     // Find the expiration date from filtered cookies (use the longest expiration date)
     let expireDate = null;
-    if (cookies.length > 0) {
-      const maxExpiration = Math.max(...cookies.map(c => c.expires || 0).filter(exp => exp > 0));
+    if (allCookies.length > 0) {
+      const maxExpiration = Math.max(...allCookies.map(c => c.expires || 0).filter(exp => exp > 0));
       if (maxExpiration > 0) {
         expireDate = new Date(maxExpiration * 1000).toISOString();
       }
@@ -96,7 +93,7 @@ async function loginAndGetCookies(email, password) {
 
     return {
       url: 'https://www.capcut.com',
-      cookies: cookies,
+      cookies: allCookies,
       expire_date: expireDate
     };
   } catch (error) {
