@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import dotenv from 'dotenv';
+import { setTimeout } from 'timers/promises';
 
 // Load environment variables
 dotenv.config();
@@ -54,7 +55,7 @@ async function loginAndGetCookies(email, password) {
     await page.click('.lv_sign_in_panel_wide-primary-button');
     
     // Wait for navigation/transition
-    await page.waitForTimeout(2000);
+    await setTimeout(2000);
 
     // Wait for password input and enter password
     console.log('Entering password...');
