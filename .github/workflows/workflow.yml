@@ -13,6 +13,12 @@ jobs:
   refresh-cookies:
     runs-on: ubuntu-latest
 
+    env:
+      API_BASE_URL: ${{ vars.API_BASE_URL || 'https://namoacademy-api.huynhphvan.workers.dev' }}
+      LOGIN_URL: ${{ vars.LOGIN_URL || 'https://www.capcut.com/vi-vn/login' }}
+      PUPPETEER_HEADLESS: 'true'
+      CI: 'true'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
