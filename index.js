@@ -132,6 +132,8 @@ async function loginAndGetCookies(email, password) {
       }
     }
 
+    console.log('Formatted cookies:', formattedCookies);
+
     return {
       url: 'https://www.capcut.com',
       cookies: formattedCookies,
@@ -173,7 +175,7 @@ async function uploadCookies(accountId, cookieData) {
 
 // Process a single account
 async function processAccount(account) {
-  console.log(`\nProcessing account ${account.id} (${account.email})...`);
+  console.log(`\nProcessing account:`, account);
   
   try {
     // Login and get cookies
