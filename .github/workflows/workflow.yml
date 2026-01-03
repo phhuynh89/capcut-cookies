@@ -76,11 +76,7 @@ jobs:
 
       - name: Install npm dependencies
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci --prefer-offline --no-audit --no-fund
-          else
-            npm install --prefer-offline --no-audit --no-fund
-          fi
+          npm install
 
       - name: Run cookie refresh
         run: npm start
